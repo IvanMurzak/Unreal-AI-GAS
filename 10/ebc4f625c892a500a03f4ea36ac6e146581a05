@@ -1,0 +1,19 @@
+.github/workflows/test_pull_request.yml
+  s_f6915d8acf5b41::t_c3089fcb76e53a 98-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "10ebc4f625c892a500a03f4ea36ac6e146581a05",
+  "prompts": {},
+  "sessions": {
+    "s_f6915d8acf5b41": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-ab7490ae1f9bc1b0d",
+        "model": "unknown"
+      },
+      "human_author": "Ivan Murzak <Ivan.D.Murzak@gmail.com>"
+    }
+  }
+}
