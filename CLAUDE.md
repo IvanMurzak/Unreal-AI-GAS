@@ -10,23 +10,19 @@ The dependency on the `GameplayAbilities` engine plugin (a `.Build.cs` module de
 `Plugins[]` entry) **is the gating**: this extension won't compile or load unless GAS is present in
 the host project.
 
-> **Scaffold state:** this repo is a freshly-initialized skeleton — the gating + CI are wired but the
-> GAS tools are **not implemented yet**. The provider currently registers only the sample
-> `hello-extension` tool; the implementation step replaces it with the `gas-*` tools below.
-
-## The tools (planned)
+## The tools
 
 The provider (`FUnrealAIGASProvider` in `UnrealAIGAS/Source/UnrealAIGAS/Private/UnrealAIGASModule.cpp`)
-will register GAS tools via the fluent `Registry.Tool(...).Handle(...)` builder:
+registers GAS tools via the fluent `Registry.Tool(...).Handle(...)` builder:
 
-- `gas-list-abilities` — list `UGameplayAbility` classes (blueprint + native), read-only.
-- `gas-list-attribute-sets` — list `UAttributeSet` classes, read-only.
-- `gas-add-ability-system` — add a `UAbilitySystemComponent` to an actor in the editor world.
-- `gas-grant-ability` — grant a `UGameplayAbility` to an actor's ability system.
-- `gas-get-ability-system` — inspect an actor's ability system (granted abilities + attributes), read-only.
+- `gas-list-abilities` — list `UGameplayAbility` classes (native + Blueprint) via the Asset Registry, read-only.
+- `gas-list-effects` — list `UGameplayEffect` classes (native + Blueprint) via the Asset Registry, read-only.
+- `gas-list-attribute-sets` — list `UAttributeSet` classes (native + Blueprint) via the Asset Registry, read-only.
+- `gas-inspect-ability` — inspect one Gameplay Ability class (tags, cost/cooldown GE, instancing policy), read-only.
+- `gas-grant-ability` — grant a `UGameplayAbility` to a named actor's `UAbilitySystemComponent` in the editor world, mutating.
 
-The exact set is settled during implementation; `extension.json` `tools[]` + the README table are the
-source of truth, and each tool ships one UE Automation spec + one E2E check. Handlers run on the
+`extension.json` `tools[]` + the README table are the source of truth, and each tool ships one UE
+Automation spec + one E2E check. Handlers run on the
 **game thread** and call GAS / editor APIs directly; mutating tools validate engine state defensively
 (UE has no C++ exceptions — a crash in a handler is an editor crash) and return
 `FUnrealMcpToolResult::Error(...)`, never an unchecked deref.
