@@ -3,9 +3,9 @@
 <p align="center">
   A <b>Gameplay Ability System (GAS)</b> tool extension for
   <a href="https://github.com/IvanMurzak/Unreal-MCP">AI Game Developer (Unreal-MCP)</a>.
-  Lets an AI agent inspect Gameplay Abilities and Attribute Sets, add an Ability System Component to
-  actors, grant abilities, and read an actor's ability/attribute state — all from inside the Unreal
-  Editor.
+  Lets an AI agent enumerate a project's Gameplay Abilities, Gameplay Effects, and Attribute Sets,
+  inspect an ability's configuration, and grant an ability to an actor's Ability System Component —
+  all from inside the Unreal Editor.
 </p>
 
 ---
@@ -21,29 +21,22 @@ live-updates what the AI sees.
 > dependency on the engine's `GameplayAbilities` plugin — that dependency **is the gating**: the
 > extension won't compile or load unless GAS is present in the host project.
 
-## Status
+## Tools
 
-This repository is a freshly-scaffolded **skeleton**: the gating against the `GameplayAbilities`
-plugin is wired and the CI is live, but the GAS tools are **not implemented yet** — the provider
-currently registers only the sample `hello-extension` tool the template ships, which the
-implementation step replaces with the tools below.
-
-## Tools (planned)
-
-This extension will contribute the following GAS tools (ids are kebab-case, prefixed `gas-`; handlers
-run on the game thread and call GAS / editor APIs directly). Mutating tools validate engine state
-defensively and return a structured error rather than crashing the editor.
+This extension contributes the following GAS tools (ids are kebab-case, prefixed `gas-`; handlers
+run on the game thread and call GAS / Asset Registry / editor APIs directly). Mutating tools validate
+engine state defensively and return a structured error rather than crashing the editor.
 
 | Tool | Kind | What it does |
 | --- | --- | --- |
-| `gas-list-abilities` | read-only | List the `UGameplayAbility` classes (blueprint + native) available in the project. |
-| `gas-list-attribute-sets` | read-only | List the `UAttributeSet` classes available in the project. |
-| `gas-add-ability-system` | mutating | Add a `UAbilitySystemComponent` to a named actor in the editor world. |
-| `gas-grant-ability` | mutating | Grant a `UGameplayAbility` to a named actor's ability system. |
-| `gas-get-ability-system` | read-only | Inspect an actor's ability system: granted abilities + current attribute values. |
+| `gas-list-abilities` | read-only | List every `UGameplayAbility` class (native + Blueprint) in the project via the Asset Registry, without loading them. |
+| `gas-list-effects` | read-only | List every `UGameplayEffect` class (native + Blueprint) in the project via the Asset Registry, without loading them. |
+| `gas-list-attribute-sets` | read-only | List every `UAttributeSet` class (native + Blueprint) in the project via the Asset Registry, without loading them. |
+| `gas-inspect-ability` | read-only | Inspect one Gameplay Ability class: ability/cancel/block tags, cost + cooldown Gameplay Effects, and instancing policy. |
+| `gas-grant-ability` | mutating | Grant a `UGameplayAbility` to a named actor's `UAbilitySystemComponent` in the active editor world. |
 
-> The exact tool set is finalized during implementation; each tool ships with one UE Automation spec
-> and one E2E `unreal-mcp-cli` check. `extension.json` `tools[]` and this table are the source of truth.
+> Each tool ships with one UE Automation spec and one E2E `unreal-mcp-cli` check. `extension.json`
+> `tools[]` and this table are the source of truth.
 
 ## Install
 
@@ -70,7 +63,7 @@ app button and the in-editor Extensions panel.
 UnrealAIGAS/                                  the UE plugin
 ├── UnrealAIGAS.uplugin                        descriptor; Type=Editor; Plugins: [ UnrealMCP, GameplayAbilities ]
 └── Source/UnrealAIGAS/
-    ├── UnrealAIGAS.Build.cs                   deps: UnrealMcpRuntime + UnrealMcpEditor + GameplayAbilities(+Editor)
+    ├── UnrealAIGAS.Build.cs                   deps: UnrealMcpRuntime + UnrealMcpEditor + GameplayAbilities + GameplayTags/AssetRegistry/UnrealEd
     └── Private/
         ├── UnrealAIGASModule.cpp              the IUnrealMcpToolProvider + module; registers the tools
         └── Tests/UnrealAIGASSpec.cpp          UE Automation specs (one It(...) per tool)

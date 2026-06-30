@@ -95,7 +95,9 @@ jobs:
           # + local server" bring-up). `open` spawns the editor and returns; wait-for-ready then blocks
           # until tools/list is answerable. The host .uproject (UNREAL_HOST_PROJECT) must already have the
           # UnrealMCP core plugin installed (its bridge built / server pinned) — set up once per runner.
-          Start-Process -FilePath "npx" -ArgumentList @(
+          # NOTE: -FilePath must be "npx.cmd" (not "npx"): Start-Process does NOT apply PATHEXT
+          # resolution, so the extensionless "npx" shim throws "%1 is not a valid Win32 application".
+          Start-Process -FilePath "npx.cmd" -ArgumentList @(
             '--yes','unreal-mcp-cli','open',"$projectDir",'--start-server','--connection-mode','Custom'
           ) -NoNewWindow
           npx --yes unreal-mcp-cli wait-for-ready --path "$projectDir" --timeout 300000
