@@ -33,13 +33,24 @@ public class UnrealAIGAS : ModuleRules
 			"UnrealMcpEditor",
 
 			// --- Your feature's engine modules (THE GATING) ---------------------------------------
-			// Uncomment + rename these to the engine plugin/module(s) your tools wrap. This dependency
-			// IS the "gating": the extension won't compile or load without the engine plugin it targets.
-			// `commands/init.ps1 -FeaturePlugin <Name>` wires the matching { "Name": "<Feature>" } entry
-			// into the .uplugin "Plugins" array; uncomment the lines below to take a real code dependency.
-			//   e.g. for Niagara: "Niagara", "NiagaraEditor"
+			// This dependency IS the "gating": the extension won't compile or load without the engine
+			// plugin it targets. The GATING plugin (GameplayAbilities) is declared in the .uplugin
+			// "Plugins" array; here we depend on its RUNTIME module, which carries every type the tools
+			// touch (UGameplayAbility, UGameplayEffect, UAttributeSet, UAbilitySystemComponent,
+			// FGameplayAbilitySpec). The plugin's editor module is "GameplayAbilitiesEditor"
+			// (Type=UncookedOnly), but NONE of these tools call an editor-only GAS API, so it is NOT a
+			// dependency here (the iter-01 scaffold seeded it; dropped per the verify-real-module-names rule).
 			"GameplayAbilities",
-			"GameplayAbilitiesEditor",
+
+			// --- Support modules this extension's tools call ----------------------------------------
+			// GameplayTags : FGameplayTagContainer / FGameplayTag string-ify in gas-inspect-ability
+			//                (a public dep of GameplayAbilities, declared explicitly since we use it directly).
+			// AssetRegistry: enumerate UGameplayAbility / UGameplayEffect / UAttributeSet subclasses
+			//                without loading them (the three gas-list-* tools, via GetDerivedClassNames).
+			// UnrealEd     : GEditor + the editor world context for gas-grant-ability.
+			"GameplayTags",
+			"AssetRegistry",
+			"UnrealEd",
 		});
 	}
 }
