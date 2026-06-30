@@ -2,21 +2,21 @@
   "FileVersion": 3,
   "Version": 1,
   "VersionName": "0.1.0",
-  "FriendlyName": "YOUR_EXTENSION_DISPLAY_NAME",
+  "FriendlyName": "Unreal AI GAS",
   "Description": "An AI Game Developer (Unreal-MCP) extension. Implements IUnrealMcpToolProvider and contributes MCP tools that an AI agent can call against the Unreal Editor.",
   "Category": "AI",
-  "CreatedBy": "YOUR_GITHUB_USERNAME_REPOSITORY",
-  "CreatedByURL": "https://github.com/YOUR_GITHUB_USERNAME_REPOSITORY",
-  "DocsURL": "https://github.com/YOUR_GITHUB_USERNAME_REPOSITORY",
+  "CreatedBy": "IvanMurzak/Unreal-AI-GAS",
+  "CreatedByURL": "https://github.com/IvanMurzak/Unreal-AI-GAS",
+  "DocsURL": "https://github.com/IvanMurzak/Unreal-AI-GAS",
   "MarketplaceURL": "",
-  "SupportURL": "https://github.com/YOUR_GITHUB_USERNAME_REPOSITORY/issues",
+  "SupportURL": "https://github.com/IvanMurzak/Unreal-AI-GAS/issues",
   "CanContainContent": false,
   "IsBetaVersion": true,
   "IsExperimentalVersion": false,
   "Installed": false,
   "Modules": [
     {
-      "Name": "YOUR_EXTENSION_MODULE",
+      "Name": "UnrealAIGAS",
       "Type": "Editor",
       "LoadingPhase": "Default"
     }
@@ -24,6 +24,10 @@
   "Plugins": [
     {
       "Name": "UnrealMCP",
+      "Enabled": true
+    },
+    {
+      "Name": "GameplayAbilities",
       "Enabled": true
     }
   ]

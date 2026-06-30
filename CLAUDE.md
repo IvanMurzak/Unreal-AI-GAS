@@ -1,16 +1,37 @@
-# Unreal-AI-Template
+# Unreal-AI-GAS
 
-This is the **template repo** for authoring new **Unreal-MCP extension** plugins (the Unreal analog
-of `Unity-AI-Tools-Template`). An extension is a C++ `Type=Editor` UE plugin implementing
-`IUnrealMcpToolProvider` that contributes MCP tools to AI Game Developer (Unreal-MCP).
+This is the **Unreal AI GAS** extension — a C++ `Type=Editor` Unreal Engine plugin that implements
+the Unreal-MCP contract `IUnrealMcpToolProvider` and contributes a family of MCP tools wrapping the
+engine's **GameplayAbilities** (Gameplay Ability System) plugin to AI Game Developer (Unreal-MCP).
+It was scaffolded from `IvanMurzak/Unreal-AI-Template`; the plugin/module is `UnrealAIGAS` (UE module
+names can't contain `-`, so the repo's `Unreal-AI-GAS` becomes `UnrealAIGAS`).
 
-Boilerplate is customized by `commands/init.ps1` (or `commands/init.py`), which renames the
-plugin/module and replaces placeholders (`YOUR_EXTENSION_MODULE`, `YOUR_EXTENSION_ID`,
-`YOUR_EXTENSION_DISPLAY_NAME`, `YOUR_TOOL_ID`, `YOUR_GITHUB_USERNAME_REPOSITORY`,
-`YOUR_FEATURE_PLUGIN`/`YOUR_FEATURE_MODULE`). Changes here propagate to every future extension —
-keep placeholder tokens consistent.
+The dependency on the `GameplayAbilities` engine plugin (a `.Build.cs` module dep + a `.uplugin`
+`Plugins[]` entry) **is the gating**: this extension won't compile or load unless GAS is present in
+the host project.
 
-## The contract (DO read before editing tools)
+> **Scaffold state:** this repo is a freshly-initialized skeleton — the gating + CI are wired but the
+> GAS tools are **not implemented yet**. The provider currently registers only the sample
+> `hello-extension` tool; the implementation step replaces it with the `gas-*` tools below.
+
+## The tools (planned)
+
+The provider (`FUnrealAIGASProvider` in `UnrealAIGAS/Source/UnrealAIGAS/Private/UnrealAIGASModule.cpp`)
+will register GAS tools via the fluent `Registry.Tool(...).Handle(...)` builder:
+
+- `gas-list-abilities` — list `UGameplayAbility` classes (blueprint + native), read-only.
+- `gas-list-attribute-sets` — list `UAttributeSet` classes, read-only.
+- `gas-add-ability-system` — add a `UAbilitySystemComponent` to an actor in the editor world.
+- `gas-grant-ability` — grant a `UGameplayAbility` to an actor's ability system.
+- `gas-get-ability-system` — inspect an actor's ability system (granted abilities + attributes), read-only.
+
+The exact set is settled during implementation; `extension.json` `tools[]` + the README table are the
+source of truth, and each tool ships one UE Automation spec + one E2E check. Handlers run on the
+**game thread** and call GAS / editor APIs directly; mutating tools validate engine state defensively
+(UE has no C++ exceptions — a crash in a handler is an editor crash) and return
+`FUnrealMcpToolResult::Error(...)`, never an unchecked deref.
+
+## The contract (read before editing tools)
 
 - `IUnrealMcpToolProvider` (in Unreal-MCP `UnrealMcpRuntime/Public/IUnrealMcpToolProvider.h`):
   `GetExtensionId()` / `GetDisplayName()` / `GetExtensionVersion()` / `RegisterTools(FUnrealMcpToolRegistry&)`.
@@ -18,16 +39,11 @@ keep placeholder tokens consistent.
 - The provider is registered as a **modular feature** in `StartupModule` and unregistered in
   `ShutdownModule`. Unreal-MCP discovers it on boot or live.
 - Handlers run on the **game thread** (call editor/engine APIs directly). Tool ids MUST match
-  `^[a-z0-9]+(-[a-z0-9]+)*$` or the registry drops them.
+  `^[a-z0-9]+(-[a-z0-9]+)*$` or the registry drops them. Do NOT call `.ExtensionId(...)` — it's stamped.
 
 ## Commands
 
 ```powershell
-# Scaffold a new extension from the template
-./commands/init.ps1 -ExtensionModule "UnrealAINiagara" -ExtensionId "com.company.unreal-ai-niagara" `
-  -DisplayName "Unreal AI Niagara" -GitHubRepository "Owner/Unreal-AI-Niagara" -FeaturePlugin "Niagara"
-# (cross-platform parity: python commands/init.py --module ... --id ... --name ... --repo ... --feature ...)
-
 ./commands/bump-version.ps1 -NewVersion "0.2.0"   # .uplugin VersionName + GetExtensionVersion() + extension.json
 ./commands/get-version.ps1                        # prints the .uplugin VersionName (single source of truth)
 ./commands/update-core.ps1                        # refreshes extension.json minCoreVersion from Unreal-MCP releases
@@ -35,24 +51,29 @@ keep placeholder tokens consistent.
 
 ## Build / test (local loop)
 
-Junction the plugin into a UE project that has the UnrealMCP core plugin available, then build with
-UBT (see `README.md` step 4). Run Automation specs with filter = the module name. CI does the same
-on a self-hosted runner.
+Junction `UnrealAIGAS/` into a UE 5.7 project that has the UnrealMCP core plugin available (the
+`engines/unreal/test-project` testbed already junctions `Plugins/UnrealMCP`), then build the editor
+target with UBT and run the Automation specs with filter = the module name (`UnrealAIGAS`). See
+`README.md` → "Develop locally". CI does the same on a self-hosted Windows UE runner.
 
 ## Conventions
 
-- **Naming:** repo `Unreal-AI-<Feature>` (hyphens); plugin + module `UnrealAI<Feature>` (no hyphens —
-  UE module names can't contain `-`); C++ prefixes `F*`/`U*`/`I*`; tool ids kebab-case.
+- **Naming:** repo `Unreal-AI-GAS` (hyphens); plugin + module `UnrealAIGAS` (no hyphens — UE module
+  names can't contain `-`); C++ prefixes `F*`/`U*`/`I*`; tool ids kebab-case `gas-<op>`.
 - **C++ style:** Unreal — tabs, braces on new lines, UE types. File header: the
-  `// Copyright (c) 2026 ...` Apache-2.0 one-liner.
+  `// Copyright (c) 2026 ...` Apache-2.0 one-liner. The module is **unity-built** (every `.cpp` is
+  concatenated into one TU), so give file-local helpers a module-unique name (prefix `UnrealAIGAS_`) —
+  an `anonymous namespace` does NOT make a helper file-private here.
 - **Versioning:** the `.uplugin` `VersionName` is the single source of truth; never hand-edit one
-  version location alone — use `bump-version.ps1`.
+  version location alone — use `bump-version.ps1`. Keep `GetExtensionVersion()` == the `VersionName`.
 - **Tests:** one UE Automation spec + one E2E `unreal-mcp-cli` check **per tool**.
+- **Distribution:** GitHub-Release source zip `UnrealAIGAS-<version>.zip` at tag `v<version>`; UE
+  compiles on the consumer's next editor open. NOT a NuGet package, NOT precompiled binaries.
 - **Secrets:** never commit `.env` or tokens.
 
 ## Find detail in
 
-- `README.md` — the full user-facing scaffold → init → build → register → release → install walkthrough.
-- `docs/claude/architecture.md` — extension shape, the contract, init flow, layout.
+- `README.md` — the user-facing tools / install / develop / release / CI walkthrough.
+- `docs/claude/architecture.md` — extension shape, the contract, layout.
 - `docs/claude/ci.md` — workflows, required repo variables, self-hosted runner gating.
 - `docs/claude/release.md` — version gate + atomic release mechanics.
