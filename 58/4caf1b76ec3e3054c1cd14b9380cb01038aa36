@@ -1,0 +1,19 @@
+UnrealAIGAS/Source/UnrealAIGAS/UnrealAIGAS.Build.cs
+  s_9d7266ac816a7d::t_deb5dc63e747ea 36-42,44-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "584caf1b76ec3e3054c1cd14b9380cb01038aa36",
+  "prompts": {},
+  "sessions": {
+    "s_9d7266ac816a7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a09c770dd6dd63b44",
+        "model": "unknown"
+      },
+      "human_author": "Ivan Murzak <Ivan.D.Murzak@gmail.com>"
+    }
+  }
+}
