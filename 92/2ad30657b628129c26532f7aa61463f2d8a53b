@@ -1,0 +1,35 @@
+UnrealAIGAS/Source/UnrealAIGAS/Private/UnrealAIGASModule.cpp
+  s_e3cea916442b5e::t_4cb7ac75537e73 422
+  s_e3cea916442b5e::t_84516e18a1cd0d 33,174,221-244,249-302,373-374
+  s_e3cea916442b5e::t_246744ad1fa304 34-36,171-173
+  s_e3cea916442b5e::t_64c3e7a7632dee 175-177
+  s_e3cea916442b5e::t_894d37d6f54de3 218-220
+  s_e3cea916442b5e::t_6ee1e7cf757855 303-305,370-372
+  s_e3cea916442b5e::t_44c74e55dd97fe 375-377,419-421
+  s_e3cea916442b5e::t_15c7e0705b8602 423-425
+  s_9d7266ac816a7d::t_142739697f42f2 6-13,18-30,37-170,178-181,187-192,206-208,210-217,306-369,378-418,426-429,432-438
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "922ad30657b628129c26532f7aa61463f2d8a53b",
+  "prompts": {},
+  "sessions": {
+    "s_9d7266ac816a7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a09c770dd6dd63b44",
+        "model": "unknown"
+      },
+      "human_author": "Ivan Murzak <Ivan.D.Murzak@gmail.com>"
+    },
+    "s_e3cea916442b5e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c575ab56-73e6-4952-bb8b-fef415924e27",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Ivan Murzak <Ivan.D.Murzak@gmail.com>"
+    }
+  }
+}
