@@ -1,18 +1,18 @@
 # Unreal-AI-GAS
 
 The **Unreal AI GAS** extension for AI Game Developer (Unreal-MCP): a C++ `Type=Editor` UE plugin
-(`UnrealAIGAS`) implementing `IUnrealMcpToolProvider` that contributes MCP tools wrapping the engine's **GameplayAbilities** plugin (Gameplay Ability System). Scaffolded
-from `IvanMurzak/Unreal-AI-Template` — it is now its own extension; do not edit it as the template.
+(`UnrealAIGAS`) implementing `IUnrealMcpToolProvider`; its MCP tools wrap the engine's **GameplayAbilities** plugin (Gameplay Ability System).
+Scaffolded from `IvanMurzak/Unreal-AI-Template`, but now its own extension — do not edit it as the template.
 
 **Gating:** the `GameplayAbilities` engine plugin (`.Build.cs` module dep + `.uplugin` `Plugins[]` entry) — the extension won't compile or load without it.
 
 ## Layout
 
-- `UnrealAIGAS/` — the plugin (the only folder the release zip ships): `UnrealAIGAS.uplugin` + `Source/UnrealAIGAS/`
-  (`UnrealAIGAS.Build.cs`, `Private/UnrealAIGASModule.cpp` = provider `FUnrealAIGASProvider` + module, `Private/Tests/` = Automation specs).
-- `Tests/e2e/` — `Run-ToolChecks.ps1` harness + `tools/<tool-id>.e2e.ps1`, one check per tool.
+- `UnrealAIGAS/` — the plugin, the only folder the release zip ships: `UnrealAIGAS.uplugin` + `Source/UnrealAIGAS/`
+  (`UnrealAIGAS.Build.cs`; `Private/UnrealAIGASModule.cpp` = provider `FUnrealAIGASProvider` + module; `Private/Tests/` = Automation specs).
+- `Tests/e2e/` — `Run-ToolChecks.ps1` harness + `tools/<tool-id>.e2e.ps1` checks.
 - `commands/` — `bump-version`, `get-version`, `update-core`; `init` was the one-time scaffold (not rerun).
-- `extension.json` — install-catalog manifest (`version` mirrors the `.uplugin`; `minCoreVersion`, `enginePlugins`, `tools[]`).
+- `extension.json` — install-catalog manifest (`version`, `minCoreVersion`, `enginePlugins`, `tools[]`).
 - `.github/workflows/` — `test_pull_request.yml` (calls `test_unreal_plugin.yml` + E2E), version-gated `release.yml`, `bump_version.yml`.
 - `docs/claude/` — `architecture.md` (extension shape, contract), `ci.md` (workflows, repo variables,
   self-hosted runner gating), `release.md` (version gate, atomic source-zip release).
